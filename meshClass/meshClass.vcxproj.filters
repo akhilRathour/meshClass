@@ -21,15 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="meshClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="multiLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="lighting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -51,26 +42,17 @@
     <ClCompile Include="VBO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TypeOFlight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="specMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="movingLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="dependency.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -89,6 +71,9 @@
     <ClInclude Include="VBO.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="TEX.jpeg">
@@ -100,27 +85,21 @@
     <Image Include="brick.png">
       <Filter>Resource Files\textures</Filter>
     </Image>
+    <Image Include="planks.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="planksSpec.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="multiLight.vert">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="default.vert">
       <Filter>Resource Files\shaders</Filter>
     </None>
-    <None Include="light.vert">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="diffLights.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="specMAP.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
-    <None Include="multiLight.frag">
-      <Filter>Resource Files\shaders</Filter>
-    </None>
     <None Include="default.frag">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="light.vert">
       <Filter>Resource Files\shaders</Filter>
     </None>
     <None Include="light.frag">
