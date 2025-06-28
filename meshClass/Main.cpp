@@ -1,7 +1,6 @@
 
 #include"Mesh.h"
-
-
+#include<vector>
 
 const unsigned int width = 800;
 const unsigned int height = 800;
@@ -52,6 +51,108 @@ GLuint lightIndices[] =
 	4, 6, 7
 };
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
+void GenerateCircle(
+	std::vector<Vertex>& vertices,
+	std::vector<GLuint>& indices,
+	float radius,
+	int segments
+) {
+	vertices.clear();
+	indices.clear();
+
+	// Center vertex
+	vertices.push_back({
+		glm::vec3(0.0f, 0.0f, 0.0f),     // position
+		glm::vec3(0.0f, 1.0f, 0.0f),     // normal
+		glm::vec3(1.0f, 1.0f, 1.0f),     // color
+		glm::vec2(0.5f, 0.5f)            // tex coord (center of texture)
+		});
+
+	for (int i = 0; i <= segments; ++i) {
+		float angle = (2.0f * M_PI * i) / segments;
+		float x = radius * cos(angle);
+		float z = radius * sin(angle);
+
+		float u = (x / (2 * radius)) + 0.5f;
+		float v = (z / (2 * radius)) + 0.5f;
+
+		vertices.push_back({
+			glm::vec3(x, 0.0f, z),
+			glm::vec3(0.0f, 1.0f, 0.0f),
+			glm::vec3(1.0f, 1.0f, 1.0f),
+			glm::vec2(u, v)
+			});
+	}
+
+	// Create triangle fan indices
+	for (int i = 1; i <= segments; ++i) {
+		indices.push_back(0);        // center
+		indices.push_back(i);
+		indices.push_back(i + 1);
+	}
+}
+void GenerateSphere(
+	std::vector<Vertex>& vertices,
+	std::vector<GLuint>& indices,
+	float radius,
+	int sectorCount,   // longitude slices
+	int stackCount     // latitude slices
+) {
+	vertices.clear();
+	indices.clear();
+
+	const float PI = 3.14159265359f;
+
+	for (int i = 0; i <= stackCount; ++i) {
+		float stackAngle = PI / 2 - i * (PI / stackCount); // from +pi/2 to -pi/2
+		float xy = radius * cosf(stackAngle);
+		float y = radius * sinf(stackAngle);
+
+		for (int j = 0; j <= sectorCount; ++j) {
+			float sectorAngle = j * (2 * PI / sectorCount); // from 0 to 2pi
+
+			float x = xy * cosf(sectorAngle);
+			float z = xy * sinf(sectorAngle);
+
+			float u = (float)j / sectorCount;
+			float v = (float)i / stackCount;
+
+			glm::vec3 position = glm::vec3(x, y, z);
+			glm::vec3 normal = glm::normalize(position);
+			glm::vec2 texCoords = glm::vec2(u, v);
+
+			vertices.push_back({
+				position,
+				normal,
+				glm::vec3(1.0f, 1.0f, 1.0f),  // white color
+				texCoords
+				});
+		}
+	}
+
+	for (int i = 0; i < stackCount; ++i) {
+		int k1 = i * (sectorCount + 1);
+		int k2 = k1 + sectorCount + 1;
+
+		for (int j = 0; j < sectorCount; ++j, ++k1, ++k2) {
+			if (i != 0) {
+				indices.push_back(k1);
+				indices.push_back(k2);
+				indices.push_back(k1 + 1);
+			}
+
+			if (i != (stackCount - 1)) {
+				indices.push_back(k1 + 1);
+				indices.push_back(k2);
+				indices.push_back(k2 + 1);
+			}
+		}
+	}
+}
 
 int main()
 {
@@ -95,7 +196,7 @@ int main()
 	};
 
 
-
+	
 
 	// Generates Shader object using shaders default.vert and default.frag
 	Shader shaderProgram("default.vert", "default.frag");
@@ -115,7 +216,7 @@ int main()
 	// Create light mesh
 	Mesh light(lightVerts, lightInd, tex);
 
-
+	
 
 
 
@@ -138,8 +239,19 @@ int main()
 	glUniform3f(glGetUniformLocation(shaderProgram.ID, "lightPos"), lightPos.x, lightPos.y, lightPos.z);
 
 
+	//creating a circle
+	std::vector<Vertex> circleVertices;
+	std::vector<GLuint> circleIndices;
 
+	GenerateCircle(circleVertices, circleIndices, 1.0f, 64);
+	Mesh circle(circleVertices, circleIndices, tex);
 
+	//creating sphere
+	std::vector<Vertex> sphereVertices;
+	std::vector<GLuint> sphereIndices;
+
+	GenerateSphere(sphereVertices, sphereIndices, 1.0f, 36, 18); // smooth sphere
+	Mesh sphere(sphereVertices, sphereIndices, tex);
 
 	// Enables the Depth Buffer
 	glEnable(GL_DEPTH_TEST);
@@ -163,9 +275,20 @@ int main()
 
 
 		// Draws different meshes
-		floor.Draw(shaderProgram, camera);
+		//floor.Draw(shaderProgram, camera);
 		light.Draw(lightShader, camera);
+		glm::vec3 objectPos = glm::vec3(0.0f, -1.0f, 0.0f);
+		glm::mat4 objectModel = glm::mat4(1.0f);
+		objectModel = glm::translate(objectModel, objectPos);
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
+		circle.Draw(shaderProgram, camera);
 
+		 objectPos = glm::vec3(0.0f, 1.0f, 0.0f);
+		 
+		 objectModel = glm::mat4(1.0f);
+		objectModel = glm::translate(objectModel, objectPos);
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(objectModel));
+		sphere.Draw(shaderProgram, camera);
 
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
